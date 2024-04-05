@@ -2,29 +2,30 @@ import pygame
 from config import *
 import math
 
-
-#hitboxes
-collideCount = 0
-interactCount = 0
-huis1 = pygame.Rect(140 , 270, -175 , -200)
-veld1 = pygame.Rect(-160 , 315, -170 , -105)
-huis2 = pygame.Rect(-450 , 550, -175 , -200)
-deur1 = pygame.Rect(1000, 1000, -1000, -1000)
-
-#borders
-borderhuis = [1000, -1000, 1000, -1000]
-borderbuiten = [360, -600, 460, 0]
-
-#lijst met hitboxes
-hitboxeshuis = [huis1]
-hitboxesbuiten = [huis1, veld1, huis2]
-interactableObjects = [huis1, huis2, deur1]
-
-#plek
-hitboxes = hitboxesbuiten
-borders = borderbuiten
-
 class player(pygame.sprite.Sprite):
+
+    #hitboxes
+    collideCount = 0
+    interactCount = 0
+    huis1 = pygame.Rect(0, 0, 0, 0)
+    veld1 = pygame.Rect(0, 0, 0, 0)
+    huis2 = pygame.Rect(500, 500, 1000, 1000)
+    deur1 = pygame.Rect(1000, 1000, -1000, -1000)
+
+    #borders
+    borderhuis = [500, 500, 1000, 1000]
+    borderbuiten = [500, 500, 1000, 1000]
+
+    #lijst met hitboxes
+    hitboxeshuis = [huis1]
+    hitboxesbuiten = [huis1, veld1, huis2]
+    interactableObjects = [huis1, huis2, deur1]
+
+    #plek
+    hitboxes = hitboxesbuiten
+    borders = borderbuiten
+
+    achtergrond = pygame.image.load("img/achtergrond.png")
 
     def __init__(self, game):
         super().__init__()
@@ -77,29 +78,30 @@ class player(pygame.sprite.Sprite):
       self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
 
     def bordercheck(self):
-        if self.pos[0] > 360:
-            self.pos[0] = 360
-        elif self.pos[0] < -600:
-            self.pos[0] = -600
-        elif self.pos[1] > 460:
-            self.pos[1] = 460
-        elif self.pos[1] < 0:
-            self.pos[1] = 0
-
+        if self.pos[0] > 472:
+            self.pos[0] = 473
+        elif self.pos[0] < -4*992+473+17*4:
+            self.pos[0] = -4*992+473+17*4
+        elif self.pos[1] > 282-40:
+            self.pos[1] = 282-40
+        elif self.pos[1] < -992*4+282+40:
+            self.pos[1] = -992*4+282+40
+        
+        print(self.pos)
 
     def collideCheck(self):
-        for i in range(0, (len(hitboxes) - 1), 1):
-            if pygame.Rect.colliderect(self.rect, hitboxes[i]):
+        for self.collideCount in range(0, (len(self.hitboxes) - 1), 1):
+            if pygame.Rect.colliderect(self.rect, self.hitboxes[self.collideCount]):
                 break
             else:
-                i += 1
-        if pygame.Rect.colliderect(self.rect, hitboxes[i]) and self.velocity_x > 0:
+                self.collideCount += 1
+        if pygame.Rect.colliderect(self.rect, self.hitboxes[self.collideCount]) and self.velocity_x > 0:
             self.pos[0] -= 1
-        if pygame.Rect.colliderect(self.rect, hitboxes[i]) and self.velocity_x < 0:
+        if pygame.Rect.colliderect(self.rect, self.hitboxes[self.collideCount]) and self.velocity_x < 0:
             self.pos[0] += 1
-        if pygame.Rect.colliderect(self.rect, hitboxes[i]) and self.velocity_y > 0:
+        if pygame.Rect.colliderect(self.rect, self.hitboxes[self.collideCount]) and self.velocity_y > 0:
             self.pos[1] -= 1
-        if pygame.Rect.colliderect(self.rect, hitboxes[i]) and self.velocity_y < 0:
+        if pygame.Rect.colliderect(self.rect, self.hitboxes[self.collideCount]) and self.velocity_y < 0:
             self.pos[1] += 1
 
     def interact(self):

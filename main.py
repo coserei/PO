@@ -26,7 +26,7 @@ class game:
     def render(self, inventarisVakken):
         self.gameWindow.blit(achtergrond, player.pos)
         self.gameWindow.blit(inventarisGUI, (round(500-(guiScale*115)/2, 0), 450))
-        self.gameWindow.blit(player.img, (500-7*4, round(282-4*20.5)))
+        self.gameWindow.blit(player.img, (500-7*playerSize, round(282-playerSize*20.5)))
 
         for vak in range(6):
             if item[0] == inventarisVakken[vak]:
@@ -104,9 +104,7 @@ class inventaris:
     def update(self):
         self.selectedSlot()
 
-
-
-achtergrond = pygame.transform.scale(pygame.image.load("img/achtergrond.png"), (mapScale*992, mapScale*992))
+achtergrond = pygame.transform.scale(player.achtergrond, (mapScale*992, mapScale*992))
 inventarisGUI = pygame.transform.scale(pygame.image.load("img/inventaris.png"), (guiScale*115, guiScale*20))
 
 game = game()
@@ -117,3 +115,4 @@ crop = crop()
 
 while game.spelerSpeelt:
     game.main(player, inventaris, crop)
+    print(player.pos)
