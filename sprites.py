@@ -4,13 +4,15 @@ import math
 
 class player(pygame.sprite.Sprite):
 
+    inHuis = False
+
     #hitboxes
     collideCount = 0
     interactCount = 0
-    huis1 = pygame.Rect(0, 0, 0, 0)
+    huis1 = pygame.Rect(1000, 1000, -1000, -1000)
     veld1 = pygame.Rect(0, 0, 0, 0)
     huis2 = pygame.Rect(500, 500, 1000, 1000)
-    deur1 = pygame.Rect(1000, 1000, -1000, -1000)
+    deur1 = pygame.Rect(1000, 1000, -1000, 0)
 
     #borders
     borderhuis = [500, 500, 1000, 1000]
@@ -25,7 +27,7 @@ class player(pygame.sprite.Sprite):
     hitboxes = hitboxesbuiten
     borders = borderbuiten
 
-    achtergrond = pygame.image.load("img/achtergrond.png")
+    achtergrond = pygame.transform.scale(pygame.image.load("img/achtergrond.png"), (guiScale*992, guiScale*992))
 
     def __init__(self, game):
         super().__init__()
@@ -86,8 +88,6 @@ class player(pygame.sprite.Sprite):
             self.pos[1] = 282-(playerSize/2*40)
         elif self.pos[1] < -992*mapScale+282+(playerSize/2*40):
             self.pos[1] = -992*mapScale+282++(playerSize/2*40)
-        
-        print(self.pos)
 
     def collideCheck(self):
         for self.collideCount in range(0, (len(self.hitboxes) - 1), 1):
@@ -119,6 +119,7 @@ class player(pygame.sprite.Sprite):
             self.borders = self.borderhuis
             self.pos[0] = 200
             self.pos[1] = 200
+            self.inHuis = True
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[1]) and keys[pygame.K_e]:
             self.achtergrond = pygame.image.load("img/huis.png")
             self.hitboxes = self.hitboxeshuis
