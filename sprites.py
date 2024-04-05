@@ -4,23 +4,32 @@ import math
 
 
 # Hitboxes
-
-i = 0
+collideCount = 0
+interactCount = 0
 huis1 = pygame.Rect(140 , 270, -175 , -200)
 veld1 = pygame.Rect(-160 , 315, -170 , -105)
 huis2 = pygame.Rect(-450 , 550, -175 , -200)
 deur1 = pygame.Rect(1000, 1000, -1000, -1000)
 
+# Borders
+
+borderhuis = [1000, -1000, 1000, -1000]
+borderbuiten = [360, -600, 460, 0]
+
 # Lijst met hitboxes
-hitboxes = [huis1, veld1, huis2]
+
+
+hitboxeshuis = [huis1]
+hitboxesbuiten = [huis1, veld1, huis2]
 interactableObjects = [huis1, huis2, deur1]
+borders = borderbuiten
+hitboxes = hitboxesbuiten
 
 class player(pygame.sprite.Sprite):
 
     def __init__(self, game):
         super().__init__()
 
-        self.interactableObjects = interactableObjects
         self.game = game
 
         self.speed = spelerSnelheid
@@ -96,6 +105,9 @@ class player(pygame.sprite.Sprite):
 
     def interact(self):
 
+        self.hitboxes = hitboxesbuiten
+        self.interactableObjects = interactableObjects
+
         keys = pygame.key.get_pressed()
 
         for self.interactCount in range(0, (len(self.interactableObjects) - 1), 1):
@@ -154,13 +166,17 @@ class player(pygame.sprite.Sprite):
 
             self.img = pygame.transform.scale(self.charImg[round(self.animatieFase)], (playerSize*17, playerSize*40))
     
-#class crop:
+class crop:
       
-    #def __init__(self):
-    #    self.zaadLocatie = []
+    def __init__(self):
+        self.zaadLocatie = []
       
-    #def cropPlanten(self, inventarisVakken, itemHoeveelheden):
+    def cropPlanten(self, inventarisVakken, slot):
+        keys = pygame.key.get_pressed()
 
-    #    if keys[pygame.k_q]:
-    #        if inventarisVakken[slot] == "aardbeiZaad":
-    #            self.zaadLocatie.append(self.pos)
+        if keys[pygame.K_q]:
+            if inventarisVakken[slot] == "aardbei":
+                self.zaadLocatie.append(self.pos)
+                print()
+
+

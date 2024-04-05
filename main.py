@@ -53,7 +53,7 @@ class game:
         pass
 
 
-    def main(self, player, inventaris): # De main game loop
+    def main(self, player, inventaris, crop): # De main game loop
         events = pygame.event.get()
 
         for event in events:
@@ -65,7 +65,7 @@ class game:
                 inventaris.selectedSlot(event)
 
         player.update()
-        #player.cropPlanten(inventaris.inventarisVakken, inventaris.itemHoeveelheden)
+        crop.cropPlanten(inventaris.inventarisVakken, inventaris.slot)
         self.render(inventaris.inventarisVakken)
 
 class inventaris:
@@ -106,13 +106,14 @@ class inventaris:
 
 
 
-achtergrond = pygame.transform.scale(pygame.image.load("img/achtergrond.png"), (mapScale*1000, mapScale*563))
+achtergrond = pygame.transform.scale(pygame.image.load("img/achtergrond.png"), (mapScale*992, mapScale*992))
 inventarisGUI = pygame.transform.scale(pygame.image.load("img/inventaris.png"), (guiScale*115, guiScale*20))
 
 game = game()
 game.newGame()
 inventaris = inventaris()
 player = player(game)
+crop = crop()
 
 while game.spelerSpeelt:
-    game.main(player, inventaris)
+    game.main(player, inventaris, crop)
