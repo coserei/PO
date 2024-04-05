@@ -3,7 +3,7 @@ from config import *
 import math
 
 
-# Hitboxes
+#hitboxes
 collideCount = 0
 interactCount = 0
 huis1 = pygame.Rect(140 , 270, -175 , -200)
@@ -11,19 +11,18 @@ veld1 = pygame.Rect(-160 , 315, -170 , -105)
 huis2 = pygame.Rect(-450 , 550, -175 , -200)
 deur1 = pygame.Rect(1000, 1000, -1000, -1000)
 
-# Borders
-
+#borders
 borderhuis = [1000, -1000, 1000, -1000]
 borderbuiten = [360, -600, 460, 0]
 
-# Lijst met hitboxes
-
-
+#lijst met hitboxes
 hitboxeshuis = [huis1]
 hitboxesbuiten = [huis1, veld1, huis2]
 interactableObjects = [huis1, huis2, deur1]
-borders = borderbuiten
+
+#plek
 hitboxes = hitboxesbuiten
+borders = borderbuiten
 
 class player(pygame.sprite.Sprite):
 
@@ -105,9 +104,6 @@ class player(pygame.sprite.Sprite):
 
     def interact(self):
 
-        self.hitboxes = hitboxesbuiten
-        self.interactableObjects = interactableObjects
-
         keys = pygame.key.get_pressed()
 
         for self.interactCount in range(0, (len(self.interactableObjects) - 1), 1):
@@ -141,7 +137,7 @@ class player(pygame.sprite.Sprite):
     def update(self):
         self.userInput()
         self.move()
-        self.rect = pygame.Rect(self.pos[0], self.pos[1], 14, 41)
+        self.rect = pygame.Rect(self.pos[0], self.pos[1], 17*playerSize, 40*playerSize)
         self.collideCheck()
         self.interact()
         self.collideCount = 0
