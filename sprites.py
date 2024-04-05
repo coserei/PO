@@ -79,13 +79,13 @@ class player(pygame.sprite.Sprite):
 
     def bordercheck(self):
         if self.pos[0] > 472:
-            self.pos[0] = 473
-        elif self.pos[0] < -4*992+473+17*4:
-            self.pos[0] = -4*992+473+17*4
-        elif self.pos[1] > 282-40:
-            self.pos[1] = 282-40
-        elif self.pos[1] < -992*4+282+40:
-            self.pos[1] = -992*4+282+40
+            self.pos[0] = 472
+        elif self.pos[0] < -mapScale*992+473+17*playerSize:
+            self.pos[0] = -mapScale*992+473+17*playerSize
+        elif self.pos[1] > 282-(playerSize/2*40):
+            self.pos[1] = 282-(playerSize/2*40)
+        elif self.pos[1] < -992*mapScale+282+(playerSize/2*40):
+            self.pos[1] = -992*mapScale+282++(playerSize/2*40)
         
         print(self.pos)
 
