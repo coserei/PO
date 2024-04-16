@@ -22,5 +22,5 @@ playerSize = 4 # De grootte van de speler
 
 # Inventaris en items
 
-item = ["leeg", "aardbei", "tomaat"] # Alle items in de game
+item = ["leeg", "appel", "banaan", "kers", "peer", "tomaat", "appelZaad", "banaanZaad", "kersZaad", "peerZaad", "tomaatZaad"] # Alle items in de game
 guiScale = 4 # De schaalverhouding van het grafische interface (inventaris)

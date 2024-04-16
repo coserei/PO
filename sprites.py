@@ -1,6 +1,9 @@
 import pygame
 from config import *
+from inventaris import *
 import math
+
+inventaris = inventaris()
 
 class player(pygame.sprite.Sprite):
 
@@ -13,6 +16,7 @@ class player(pygame.sprite.Sprite):
     veld1 = pygame.Rect(0, 0, 0, 0)
     huis2 = pygame.Rect(500, 500, 1000, 1000)
     deur1 = pygame.Rect(1000, 1000, -1000, 0)
+    veld2 = pygame.Rect(0, 0, -3000, -3000)
 
     #borders
     borderhuis = [500, 500, 1000, 1000]
@@ -21,7 +25,7 @@ class player(pygame.sprite.Sprite):
     #lijst met hitboxes
     hitboxeshuis = [huis1]
     hitboxesbuiten = [huis1, veld1, huis2]
-    interactableObjects = [huis1, huis2, deur1]
+    interactableObjects = [huis1, huis2, deur1, veld2]
 
     #plek
     hitboxes = hitboxesbuiten
@@ -132,6 +136,9 @@ class player(pygame.sprite.Sprite):
             self.borders = self.borderbuiten
             self.pos[0] = 44
             self.pos[1] = 10
+        if pygame.Rect.colliderect(self.rect, self.interactableObjects[3]) and keys[pygame.K_b]:
+            pygame.key.set_repeat(200)
+            crop.cropPlanten(self.pos)
 
     def spelerAnimatie(self, richting):
         self.animeerSpeler = True
@@ -148,7 +155,7 @@ class player(pygame.sprite.Sprite):
         self.bordercheck()
 
         if self.animeerSpeler == True:
-            self.animatieFase += 0.0045
+            self.animatieFase += 0.015
 
             if self.animatieFase > 1 and self.richting == 'links':
                 self.animatieFase = 0
@@ -168,14 +175,21 @@ class player(pygame.sprite.Sprite):
 class crop:
       
     def __init__(self):
+        self.zaadSoort = []
         self.zaadLocatie = []
       
-    def cropPlanten(self, inventarisVakken, slot):
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_q]:
-            if inventarisVakken[slot] == "aardbei":
-                self.zaadLocatie.append(self.pos)
-                print()
+    def cropPlanten(self, pos):
+        for zaad in range(len(item)):
+            if inventaris.inventarisVakken[inventaris.slot] == item[zaad] + "Zaad":
+                self.zaadLocatie.append(pos)
+                self.zaadSoort.append(item[zaad])
+                inventaris.itemHoeveelheden[inventaris.slot] -= 1
+                print(inventaris.itemHoeveelheden)
+                break;
+    
+    def update(self):
+        pass
+            
+crop = crop()
 
 

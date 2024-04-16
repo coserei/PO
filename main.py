@@ -1,5 +1,6 @@
 from config import *
 from sprites import *
+from inventaris import *
 import pygame, sys
 from pygame.locals import QUIT
 
@@ -37,19 +38,17 @@ class game:
                 exit;
             else:
                 for itemID in range(len(item)):
-                    print(itemID)
                     if item[itemID] == inventarisVakken[vak]:
-                        self.itemImg = pygame.transform.scale(pygame.image.load("img/" + item[itemID] + ".png"),(16*guiScale,16*guiScale))
+                        self.itemImg = pygame.transform.scale(pygame.image.load("img/items/" + item[itemID] + ".png"),(16*guiScale,16*guiScale))
                         self.gameWindow.blit(self.itemImg, inventaris.vakkenRectangles[vak])
             
             if vak == inventaris.slot:
                 self.slotSelect = pygame.transform.scale(pygame.image.load("img/slot.png"),(16*guiScale,16*guiScale))
                 self.gameWindow.blit(self.slotSelect, inventaris.vakkenRectangles[vak])
-
         
-        #for zaad in range(player.zaadLocatie):
-
-
+        for crops in range(len(crop.zaadLocatie)):
+            self.cropImg = pygame.transform.scale(pygame.image.load("img/items/" + crop.zaadSoort[crops] + ".png"),(16*guiScale,16*guiScale))
+            self.gameWindow.blit(self.cropImg, (-400, -400))
 
         pygame.display.update()
 
@@ -66,47 +65,12 @@ class game:
                 pygame.quit()
                 sys.exit()
             else:
-                inventaris.selectedSlot(event)
+                inventaris.update(event)
 
         player.update()
-        crop.cropPlanten(inventaris.inventarisVakken, inventaris.slot)
         self.render(inventaris.inventarisVakken)
+        print(inventaris.slot)
 
-class inventaris:
-
-    def __init__(self):
-
-        self.inventarisVakken = []
-        self.vakkenRectangles = [(278,458),(278+76,458),(278+2*76,458),(278+3*76,458),(278+4*76, 458),(278+5*76,458)]
-
-        self.itemHoeveelheden = [0, 0, 0, 0, 0, 0]
-
-        for vak in range(6):
-            self.inventarisVakken.append(item[0])
-
-        self.slot = slot
-
-    def selectedSlot(self, event):
-        print('a')
-        if event.type == pygame.MOUSEWHEEL:
-            if event.y > 0 and self.slot < 5:
-                self.slot += 1
-            if event.y < 0 and self.slot > 0:
-                self.slot -= 1
-            #if event.type == pygame.KEYUP or event.type == pygame.KEYDOWN and event.key == pygame.K_q and self.slot > 0:
-            #    self.slot -= 1
-            #    print(self.slot)
-            #if event.type == pygame.KEYUP or event.type == pygame.KEYDOWN and event.key == pygame.K_e and self.slot < 5:
-            #    self.slot += 1
-            #    print(self.slot)
-        print(self.slot)
-
-    #def pickUp(self):
-
-    #   if interactEvent
-    
-    def update(self):
-        self.selectedSlot()
 
 inventarisGUI = pygame.transform.scale(pygame.image.load("img/inventaris.png"), (guiScale*115, guiScale*20))
 huisExt = pygame.transform.scale(pygame.image.load("img/huisExt.png"), (mapScale*100*1.4, mapScale*100*1.4))
@@ -115,7 +79,6 @@ game = game()
 game.newGame()
 inventaris = inventaris()
 player = player(game)
-crop = crop()
 
 while game.spelerSpeelt:
     game.main(player, inventaris, crop)
