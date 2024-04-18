@@ -154,6 +154,8 @@ class player(pygame.sprite.Sprite):
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[4]) and keys[pygame.K_u]:
             pygame.key.set_repeat(1000)
             self.shop2SchermOpen = True
+            print(self.shop2SchermOpen)
+            
 
     def spelerAnimatie(self, richting):
         self.animeerSpeler = True

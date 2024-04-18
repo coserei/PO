@@ -32,4 +32,5 @@ item = ["leeg", "appel", "banaan", "kers", "peer", "tomaat", "appelZaad", "banaa
 guiScale = 4 # De schaalverhouding van het grafische interface (inventaris)
 
 buyOptions = ["appelZaad", "banaanZaad", "kersZaad", "peerZaad", "tomaatZaad"]
-buyOptions2 = ["bed1", "bed2", "bed3", "bank1", "bank2", "bank3"]
+buyOptions2 = ["bed1", "bed2", "bed3" #"bank1", "bank2", "bank3"]
+]

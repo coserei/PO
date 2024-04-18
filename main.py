@@ -45,7 +45,8 @@ class game:
 
     def render(self, inventarisVakken, zaadX):
 
-        if player.shopSchermOpen == False:
+        if not (player.shopSchermOpen == True or player.shop2SchermOpen == True):
+            print(player.shop2SchermOpen)
             if player.inHuis == False:
                 self.gameWindow.blit(huisExt, (player.velocity_x+player.pos[0]+300, player.velocity_y+player.pos[1]+200))
             self.gameWindow.blit(player.achtergrond, player.pos)
@@ -139,15 +140,14 @@ class shop:
         self.exitButtonShop = pygame.transform.scale(self.exitButtonShop, (27*guiScale, 11*guiScale))
 
         self.buySelect = 0
-        self.buyOptions = ["appelZaad", "banaanZaad", "kersZaad", "peerZaad", "tomaatZaad"]
-        self.buyOptions2 = ["bed1", "bed2", "bed3", "bank1", "bank2", "bank3"]
 
         self.buyOptionsRect = []
 
-    def buyOptions(self):
+    def shopOption(self):
 
         self.imageX = 200
-        
+        self.itemImages = []
+
         if player.shop2SchermOpen:
             self.buyOptions = buyOptions2
         if player.shopSchermOpen:
@@ -167,7 +167,6 @@ class shop:
     def draw(self):
 
         self.imageX = 200
-
         game.gameWindow.fill((255,255,255))
 
         for items in range(len(self.buyOptions)):
@@ -217,14 +216,15 @@ class shop:
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1:
                 player.shopSchermOpen = False
+                player.shop2SchermOpen = False
 
     def update(self):
         if player.shopSchermOpen or player.shop2SchermOpen:
+            self.shopOption()
             self.buySelector()
             self.buy()
             self.sell()
             self.draw()
-            self.buyOptions()
             self.exit()
 
 class button():
