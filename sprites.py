@@ -1,15 +1,13 @@
 import pygame
 from config import *
-from inventaris import *
 import math
-
-inventaris = inventaris()
 
 class player(pygame.sprite.Sprite):
 
     inHuis = False
 
-    #hitboxes
+    # Hitboxes
+
     collideCount = 0
     interactCount = 0
     huis1 = pygame.Rect(1000, 1000, -1000, -1000)
@@ -17,17 +15,21 @@ class player(pygame.sprite.Sprite):
     huis2 = pygame.Rect(500, 500, 1000, 1000)
     deur1 = pygame.Rect(1000, 1000, -1000, 0)
     veld2 = pygame.Rect(0, 0, -3000, -3000)
+    shop1 = pygame.Rect(0, 0, -3000, -3000)
+    shop2 = pygame.Rect(0, 0, -3000, -3000)
 
-    #borders
+    # Borders
+
     borderhuis = [500, 500, 1000, 1000]
     borderbuiten = [500, 500, 1000, 1000]
 
-    #lijst met hitboxes
+    # Lijst met hitboxes
+
     hitboxeshuis = [huis1]
     hitboxesbuiten = [huis1, veld1, huis2]
-    interactableObjects = [huis1, huis2, deur1, veld2]
+    interactableObjects = [huis1, huis2, deur1, veld2, shop1, shop2]
 
-    #plek
+    # Plek
     hitboxes = hitboxesbuiten
     borders = borderbuiten
 
@@ -35,6 +37,11 @@ class player(pygame.sprite.Sprite):
 
     def __init__(self, game):
         super().__init__()
+
+        self.zaadSoort = []
+        self.zaadLocatie = []
+
+        self.cropGeplant = False
 
         self.game = game
 
@@ -57,6 +64,8 @@ class player(pygame.sprite.Sprite):
 
         self.animeerSpeler = False
 
+        self.shopSchermOpen = False
+        self.shop2SchermOpen = False
     def userInput(self):
       self.velocity_x = 0
       self.velocity_y = 0
@@ -137,8 +146,14 @@ class player(pygame.sprite.Sprite):
             self.pos[0] = 44
             self.pos[1] = 10
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[3]) and keys[pygame.K_b]:
-            pygame.key.set_repeat(200)
-            crop.cropPlanten(self.pos)
+            pygame.key.set_repeat(1000)
+            self.cropGeplant = True
+        if pygame.Rect.colliderect(self.rect, self.interactableObjects[4]) and keys[pygame.K_t]:
+            pygame.key.set_repeat(1000)
+            self.shopSchermOpen = True
+        if pygame.Rect.colliderect(self.rect, self.interactableObjects[4]) and keys[pygame.K_u]:
+            pygame.key.set_repeat(1000)
+            self.shop2SchermOpen = True
 
     def spelerAnimatie(self, richting):
         self.animeerSpeler = True
@@ -171,25 +186,4 @@ class player(pygame.sprite.Sprite):
                 self.animeerSpeler = False
 
             self.img = pygame.transform.scale(self.charImg[round(self.animatieFase)], (playerSize*17, playerSize*40))
-    
-class crop:
-      
-    def __init__(self):
-        self.zaadSoort = []
-        self.zaadLocatie = []
-      
-    def cropPlanten(self, pos):
-        for zaad in range(len(item)):
-            if inventaris.inventarisVakken[inventaris.slot] == item[zaad] + "Zaad":
-                self.zaadLocatie.append(pos)
-                self.zaadSoort.append(item[zaad])
-                inventaris.itemHoeveelheden[inventaris.slot] -= 1
-                print(inventaris.itemHoeveelheden)
-                break;
-    
-    def update(self):
-        pass
-            
-crop = crop()
-
 
