@@ -5,7 +5,7 @@ class inventaris:
 
     def __init__(self):
 
-        self.inventarisVakken = ['', '', '', '', '', '']
+        self.inventarisVakken = [data[4], data[5], data[6], data[7], data[8], data[9]]
         #self.vakkenRectangles = [(278,458),(278+76,458),(278+2*76,458),(278+3*76,458),(278+4*76, 458),(278+5*76,458)]
         self.vakkenRectangles = [
         (((infox // 2) - 222), (infoy - 92)),
@@ -21,7 +21,7 @@ class inventaris:
             self.vakkenRectangles.append((self.vakX, 458))
             self.vakX += 76
 
-        self.itemHoeveelheden = [0, 0, 0, 0, 0, 0]
+        self.itemHoeveelheden = [int(data[10]), int(data[11]), int(data[12]), int(data[13]), int(data[14]), int(data[15])]
 
         #for vak in range(6):
         #    self.inventarisVakken.append(item[0])
@@ -62,8 +62,7 @@ class crop:
     
     def cropPlanten(self, playerPos, cropGeplant):
         for crops in range(len(self.zaadX)):
-            print(self.zaadX[crops]-self.zaadX[crops-1])
-            if cropGeplant == True and self.zaadX[crops]-self.zaadX[crops-1] > 16*mapScale or len(item) == 1:
+            if cropGeplant == True and (self.zaadX[crops]-self.zaadX[crops-1] > 16*mapScale or len(item) == 1):
                 cropGeplant = False
                 for zaad in range(len(item)):
                     if inventaris.inventarisVakken[inventaris.slot] == item[zaad] + "Zaad":

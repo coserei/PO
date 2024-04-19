@@ -8,14 +8,16 @@ class game:
 
     # Tijd in uren
 
-    tijd = 12
-    dag = 0
+    tijd = float(data[2])
+    dag = int(data[3])
     spelerklok = int(tijd)
     white = (255, 255, 255)
     spelgestart = False
-    font = pygame.font.SysFont("castillo", 48)
+    font = pygame.font.Font('font.ttf', 20)
     text = font.render(str(spelerklok) + ":00", True, (255, 255, 255))
     textRect = text.get_rect()
+
+    alpha = 0
 
     def __init__(self): # Initialisatie functie van de class game(), initialiseert pygame en verschillende parameters
 
@@ -39,6 +41,8 @@ class game:
 
         self.displayControls = False
 
+        self.zwart = pygame.transform.scale(pygame.image.load('img/zwart.png').convert_alpha(), (infox, infoy))
+
     def newGame(self): # deze functie wordt aangeropen vanuit de main menu voor het maken van een nieuwe game
         self.spelerSpeelt = True # Bij het aanmaken van een nieuwe game zeggen we dat de speler vanaf dat punt aan het spelen is
 
@@ -46,17 +50,28 @@ class game:
     def render(self, inventarisVakken, zaadX):
 
         if not (player.shopSchermOpen == True or player.shop2SchermOpen == True):
-            print(player.shop2SchermOpen)
-            if player.inHuis == False:
+
+            if player.inHuis == True:
+                self.gameWindow.fill((0,0,0))
+                self.gameWindow.blit(muur1Img, (infox // 2 -160*houseScale+player.pos[0],infoy // 2 -160 *houseScale+player.pos[1]))
+
+
+            if not player.inHuis:
                 self.gameWindow.blit(huisExt, (player.velocity_x+player.pos[0]+300, player.velocity_y+player.pos[1]+200))
-            self.gameWindow.blit(player.achtergrond, player.pos)
+                self.gameWindow.blit(skybox, (0,0))
+                self.gameWindow.blit(player.achtergrond, player.pos)
             self.gameWindow.blit(player.img, ((infox // 2)-7*playerSize, round((infoy // 2)-playerSize*20.5)))
-            if len(zaadX) == 1:
-                exit;
-            else:
-                for crops in range(1, len(crop.zaadX)):
-                    self.cropImg = pygame.transform.scale(pygame.image.load("img/items/" + crop.zaadSoort[crops] + "Zaad.png"),(16*guiScale,16*guiScale))
-                    self.gameWindow.blit(self.cropImg, (-crop.zaadX[crops]+player.velocity_x+player.pos[0]+(infox // 2)-7*playerSize, -crop.zaadY[crops]+player.velocity_y+player.pos[1]+round((infoy // 2)-playerSize*20.5)))
+            
+            if not player.inHuis:
+                for bomen in range(len(player.boomX)):
+                    print(player.boomX)
+                    self.gameWindow.blit(boomImg, (player.pos[0]+player.boomX[bomen],player.pos[1]+player.boomY[bomen]))
+                if len(zaadX) == 1:
+                    exit;
+                else:
+                    for crops in range(1, len(crop.zaadX)):
+                        self.cropImg = pygame.transform.scale(pygame.image.load("img/items/" + crop.zaadSoort[crops] + "Zaad.png"),(16*guiScale,16*guiScale))
+                        self.gameWindow.blit(self.cropImg, (-crop.zaadX[crops]+player.velocity_x+player.pos[0]+(infox // 2)-7*playerSize, -crop.zaadY[crops]+player.velocity_y+player.pos[1]+round((infoy // 2)-playerSize*20.5)))
 
         self.gameWindow.blit(inventarisGUI, (round((infox // 2)-(guiScale*115)/2, 0), (infoy - 100)))
 
@@ -76,13 +91,14 @@ class game:
 
         self.coinsAantal = self.font.render('Coins:  ' + str(shop.munten), True, (0, 0, 0))
         self.gameWindow.blit(self.coinsAantal, (5, 30))
-
-        #empty = self.font.render("          ", True, (0, 0, 0))
-        #self.gameWindow.blit(empty, self.textRect)
         self.gameWindow.blit(self.text, (5, self.textRect[1]))
-        
         self.fps = self.font.render("FPS:" + self.fpsAmount, True, (0, 0, 0))
         self.gameWindow.blit(self.fps, (5, 60))
+
+        self.fps = self.font.render("FPS:" + self.fpsAmount, True, (0, 0, 0))
+        self.gameWindow.blit(self.fps, (5, 60))
+        self.nacht()
+    
         pygame.display.update()
 
     def klok(self): # Deze functie update elke keer als de game update en werkt als klok
@@ -98,6 +114,18 @@ class game:
         self.textRect = self.text.get_rect()
         #empty text omdat je anders text over elkaar heen krijgt
 
+    def nacht(self):
+        alpha = 160
+        if self.tijd >= 8 and self.tijd <= 20:
+            alpha = 0
+        elif self.tijd > 20 and self.tijd < 21:
+            alpha = self.tijd * 160 - 3200
+        elif self.tijd >= 21 and self.tijd <= 7:
+            alpha = 160
+        elif self.tijd > 7 and self.tijd < 8:
+            alpha = 1280 - self.tijd * 160
+        self.zwart.set_alpha(alpha)
+        self.gameWindow.blit(self.zwart, (0, 0))
 
     def main(self, player, inventaris): # De main game loop
 
@@ -126,7 +154,7 @@ class game:
 class shop:
     
     def __init__(self):
-        self.munten = 900
+        self.munten = int(data[21])
 
         self.itemImages = []
 
@@ -185,9 +213,30 @@ class shop:
 
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1:
-                if not self.munten <= 0 and (inventaris.inventarisVakken[inventaris.slot] == item[0] or inventaris.inventarisVakken[inventaris.slot] == self.buyOptions[self.buySelect]):
+                if not self.munten <= 0 and (inventaris.inventarisVakken[inventaris.slot] == item[0] or inventaris.inventarisVakken[inventaris.slot] == self.buyOptions[self.buySelect]) and player.shopSchermOpen:
                     inventaris.inventarisVakken[inventaris.slot] = self.buyOptions[self.buySelect]
                     inventaris.itemHoeveelheden[inventaris.slot] += 1
+                    self.munten -= 1
+                
+                if player.shop2SchermOpen:
+                    if self.buyOptions[self.buySelect] == 'bed1':
+                        self.bedImg = 'bed1.png'
+                    if self.buyOptions[self.buySelect] == 'bed2':
+                        self.bedImg = 'bed2.png'
+                    if self.buyOptions[self.buySelect] == 'bed3':
+                        self.bedImg = 'bed3.png'
+                    if self.buyOptions[self.buySelect] == 'muur1':
+                        self.muurImg = 'muur1.png'
+                    if self.buyOptions[self.buySelect] == 'muur2':
+                        self.muurImg = 'muur2.png'
+                    if self.buyOptions[self.buySelect] == 'muur3':
+                        self.muurImg = 'muur3.png'
+                    if self.buyOptions[self.buySelect] == 'kaars1':
+                        self.kaarsImg = 'kaars1.png'
+                    if self.buyOptions[self.buySelect] == 'kaars2':
+                        self.kaarsImg = 'kaars2.png'
+                    if self.buyOptions[self.buySelect] == 'kaars3':
+                        self.kaarsImg = 'kaars3.png'
                     self.munten -= 1
 
     def sell(self):
@@ -199,6 +248,7 @@ class shop:
                 if inventaris.itemHoeveelheden[inventaris.slot] > 0:
                     inventaris.itemHoeveelheden[inventaris.slot] -= 1
                     self.munten += 1
+
 
     def buySelector(self):
         pos = pygame.mouse.get_pos()
@@ -228,6 +278,8 @@ class shop:
             self.exit()
 
 class button():
+
+    save = open('Saved.txt', "w")
 
     def __init__(self, x, y, image, scale):
         width = image.get_width()
@@ -263,14 +315,38 @@ class button():
 
         return action
 
-    def drawButtons():
+    def drawButtons(self):
         if game.spelgestart == False:
             game.gameWindow.fill((255, 255, 255))
-
             if game.displayControls == False:
                 if start_button.draw():
                     game.spelgestart = True
                 if exit_button.draw():
+                    savedata = [str(player.pos[0]) + "\n",
+                    str(player.pos[1]) + "\n",
+                    str(game.tijd) + "\n",
+                    str(game.dag) + "\n",
+                    str(inventaris.inventarisVakken[0]) + "\n",
+                    str(inventaris.inventarisVakken[1]) + "\n",
+                    str(inventaris.inventarisVakken[2]) + "\n",
+                    str(inventaris.inventarisVakken[3]) + "\n",
+                    str(inventaris.inventarisVakken[4]) + "\n",
+                    str(inventaris.inventarisVakken[5]) + "\n",
+                    str(inventaris.itemHoeveelheden[0]) + "\n",
+                    str(inventaris.itemHoeveelheden[1]) + "\n",
+                    str(inventaris.itemHoeveelheden[2]) + "\n",
+                    str(inventaris.itemHoeveelheden[3]) + "\n",
+                    str(inventaris.itemHoeveelheden[4]) + "\n",
+                    str(inventaris.itemHoeveelheden[5]) + "\n",
+                    str(player.borders[0]) + "\n",
+                    str(player.borders[1]) + "\n",
+                    str(player.borders[2]) + "\n",
+                    str(player.borders[3]) + "\n",
+                    str(player.hitboxessave),
+                    str(shop.munten) + "\n",
+                    player.achtergrondsave]
+                    self.save.writelines(savedata)
+                    self.save.close()
                     pygame.quit()
                     sys.exit()
                 if controls_button.draw(): 
@@ -294,10 +370,24 @@ player = player(game)
 crop = crop()
 shop = shop()
 
+boomImg = pygame.image.load('img/boomImg.png').convert_alpha()
+boomImg = pygame.transform.scale(boomImg, (int(456 * 0.5), int(546 * 0.5)))
+
+skybox = pygame.image.load('img/skybox.jpg').convert_alpha()
+skybox = pygame.transform.scale(skybox, (infox, infoy))
+
 movementKeys = pygame.image.load('img/movement_keys.png').convert_alpha()
 huisBinnenGaan_key = pygame.image.load('img/huisBinnenGaan_key.png').convert_alpha()
 huisUitGaan_key = pygame.image.load('img/huisUitGaan_key.png').convert_alpha()
 cropsOppakken = pygame.image.load('img/cropsOppakken.png').convert_alpha()
+
+muur1Img = pygame.image.load('img/items/muur1.png').convert_alpha()
+muur2Img = pygame.image.load('img/items/muur1.png').convert_alpha()
+muur3Img = pygame.image.load('img/items/muur1.png').convert_alpha()
+
+muur1Img = pygame.transform.scale(muur1Img, (houseScale*160*2,houseScale*160*2))
+muur2Img = pygame.transform.scale(muur2Img, (houseScale*160*2,houseScale*160*2))
+muur3Img = pygame.transform.scale(muur3Img, (houseScale*160*2,houseScale*160*2))
 
 movementKeys = pygame.transform.scale(movementKeys, (int(185 * 2), int(45 * 2)))
 huisBinnenGaan_key = pygame.transform.scale(huisBinnenGaan_key, (int(194 * 2), int(22 * 2)))
@@ -317,6 +407,6 @@ music = pygame.mixer.music.load("img/muziek.mp3")
 pygame.mixer.music.play(-1)
 
 while game.spelerSpeelt:
-    button.drawButtons()
+    button.drawButtons(button)
     game.main(player, inventaris)
     pygame.display.update()

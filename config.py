@@ -4,6 +4,9 @@ pygame.init()
 infox = int(pygame.display.get_desktop_sizes()[0][0])
 infoy = int(pygame.display.get_desktop_sizes()[0][1])
 
+save = open("Saved.txt")
+data = save.readlines()
+
 # Algemene variabelen
 
 vakGrootte = 16 # Geeft aan dat de grootte van elk vak in de game 16x16 is
@@ -22,15 +25,18 @@ achtergrondLaag = 1 # De renderlaag waar de achtergrond zich in bevindt
 # Speler
 
 spelerSnelheid = 1*mapScale # Het aantal pixels die de speler beweegt per movement event
-x = -300 # De x coordinaat van de speler
-y = -300 # De y coordinaat van de speler
+x = float(data[0]) # De x coordinaat van de speler
+y = float(data[1]) # De y coordinaat van de speler
 playerSize = 4 # De grootte van de speler
 
 # Inventaris en items
 
-item = ["leeg", "appel", "banaan", "kers", "peer", "tomaat", "appelZaad", "banaanZaad", "kersZaad", "peerZaad", "tomaatZaad"] # Alle items in de game
+item = ["leeg", "appel", "banaan", "kers", "peer", "tomaat", "appelZaad", "banaanZaad", 
+        "kersZaad", "peerZaad", "tomaatZaad", "bed1", "bed2", "bed3" "kaars1", "kaars2", 
+        "kaars3", "muur1", "muur2", "muur3"] # Alle items in de game
 guiScale = 4 # De schaalverhouding van het grafische interface (inventaris)
 
-buyOptions = ["appelZaad", "banaanZaad", "kersZaad", "peerZaad", "tomaatZaad"]
-buyOptions2 = ["bed1", "bed2", "bed3" #"bank1", "bank2", "bank3"]
-]
+buyOptions = ["appelZaad", "banaanZaad", "kersZaad", "peerZaad", "tomaatZaad"] # Buy opties voor de farm shop
+buyOptions2 = ["bed1", "bed2", "bed3", "kaars1", "kaars2", "kaars3", "muur1", "muur2", "muur3"] # Buy opties voor de huis shop
+
+houseScale = 3

@@ -1,6 +1,7 @@
 import pygame
 from config import *
 import math
+import random
 
 class player(pygame.sprite.Sprite):
 
@@ -10,7 +11,7 @@ class player(pygame.sprite.Sprite):
 
     collideCount = 0
     interactCount = 0
-    huis1 = pygame.Rect(1000, 1000, -1000, -1000)
+    huis1 = pygame.Rect(1000, 1000, -2000, -2000)
     veld1 = pygame.Rect(0, 0, 0, 0)
     huis2 = pygame.Rect(500, 500, 1000, 1000)
     deur1 = pygame.Rect(1000, 1000, -1000, 0)
@@ -18,10 +19,16 @@ class player(pygame.sprite.Sprite):
     shop1 = pygame.Rect(0, 0, -3000, -3000)
     shop2 = pygame.Rect(0, 0, -3000, -3000)
 
+    save = open("Saved.txt")
+    data = save.readlines()
+
     # Borders
 
     borderhuis = [500, 500, 1000, 1000]
     borderbuiten = [500, 500, 1000, 1000]
+
+    achtergrondsave = data[22]
+    hitboxessave = data[20]
 
     # Lijst met hitboxes
 
@@ -30,8 +37,13 @@ class player(pygame.sprite.Sprite):
     interactableObjects = [huis1, huis2, deur1, veld2, shop1, shop2]
 
     # Plek
-    hitboxes = hitboxesbuiten
-    borders = borderbuiten
+
+    if hitboxessave == "hitboxesbuiten":
+        hitboxes = hitboxesbuiten
+    else:
+        hitboxes = hitboxeshuis
+
+    borders = [int(data[16]), int(data[17]), int(data[18]), int(data[19])]
 
     achtergrond = pygame.transform.scale(pygame.image.load("img/achtergrond.png"), (guiScale*992, guiScale*992))
 
@@ -48,16 +60,16 @@ class player(pygame.sprite.Sprite):
         self.speed = spelerSnelheid
         self.pos = pygame.math.Vector2(x, y)
 
-        self.charImg = []
-
-        self.charImg.append(pygame.image.load('img/char_l1.png'))
-        self.charImg.append(pygame.image.load('img/char_l2.png'))
-
-        self.charImg.append(pygame.image.load('img/char_r1.png'))
-        self.charImg.append(pygame.image.load('img/char_r2.png'))
+        self.charImg = {
+            'links': [pygame.image.load('img/char_l1.png'), pygame.image.load('img/char_l2.png')],
+            'rechts': [pygame.image.load('img/char_r1.png'), pygame.image.load('img/char_r2.png')],
+            'boven': [pygame.image.load('img/char_down1.png'), pygame.image.load('img/char_down2.png')],
+            'onder': [pygame.image.load('img/char_up1.png'), pygame.image.load('img/char_up2.png')]
+        }
         
         self.animatieFase = 0
-        self.img = pygame.transform.scale(self.charImg[round(self.animatieFase)], (playerSize*17, playerSize*40))
+        self.richting = 'onder'
+        player.img = self.charImg[self.richting][0]
 
         self.image = pygame.Surface((16, 16))
         self.image.fill((0, 0, 0))
@@ -66,6 +78,26 @@ class player(pygame.sprite.Sprite):
 
         self.shopSchermOpen = False
         self.shop2SchermOpen = False
+
+        self.boomX = []
+        self.boomY = []
+
+        for bomen in range(20):
+            boomX = random.randint(2, 60) * 16 * mapScale
+            boomY = random.randint(2, 44) * 16 * mapScale
+            collision = False
+            for hitX, hitY in zip(self.boomX, self.boomY):
+                if abs(hitX - boomX) < 300 and abs(hitY - boomY) < 300:
+                    collision = True
+                    break
+
+            if not collision:
+                self.boomX.append(boomX)
+                self.boomY.append(boomY)
+
+        self.animatieTijd = 1/15
+
+
     def userInput(self):
       self.velocity_x = 0
       self.velocity_y = 0
@@ -120,6 +152,7 @@ class player(pygame.sprite.Sprite):
     def interact(self):
 
         keys = pygame.key.get_pressed()
+        pygame.key.set_repeat(1000)
 
         for self.interactCount in range(0, (len(self.interactableObjects) - 1), 1):
             if pygame.Rect.colliderect(self.rect, self.interactableObjects[self.interactCount]):
@@ -127,32 +160,18 @@ class player(pygame.sprite.Sprite):
             else:
               self.interactCount += 1
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[0]) and keys[pygame.K_e]:
-            self.achtergrond = pygame.image.load("img/huis.png")
             self.hitboxes = self.hitboxeshuis
             self.borders = self.borderhuis
-            self.pos[0] = 200
-            self.pos[1] = 200
             self.inHuis = True
-        if pygame.Rect.colliderect(self.rect, self.interactableObjects[1]) and keys[pygame.K_e]:
-            self.achtergrond = pygame.image.load("img/huis.png")
-            self.hitboxes = self.hitboxeshuis
-            self.borders = self.borderhuis
-            self.pos[0] = 200
-            self.pos[1] = 200
-        if pygame.Rect.colliderect(self.rect, self.interactableObjects[2]) and keys[pygame.K_q] and self.hitboxes == self.hitboxeshuis:
-            self.achtergrond = pygame.image.load("img/achtergrond.png")
-            self.hitboxes = self.hitboxesbuiten
-            self.borders = self.borderbuiten
-            self.pos[0] = 44
-            self.pos[1] = 10
+        if pygame.Rect.colliderect(self.rect, self.interactableObjects[0]) and keys[pygame.K_q]:
+            self.hitboxes = self.hitboxes
+            self.borders = self.borders
+            self.inHuis = False
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[3]) and keys[pygame.K_b]:
-            pygame.key.set_repeat(1000)
             self.cropGeplant = True
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[4]) and keys[pygame.K_t]:
-            pygame.key.set_repeat(1000)
             self.shopSchermOpen = True
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[4]) and keys[pygame.K_u]:
-            pygame.key.set_repeat(1000)
             self.shop2SchermOpen = True
             print(self.shop2SchermOpen)
             
@@ -171,21 +190,20 @@ class player(pygame.sprite.Sprite):
         self.interactCount = 0
         self.bordercheck()
 
-        if self.animeerSpeler == True:
-            self.animatieFase += 0.015
+        if self.animeerSpeler:
 
-            if self.animatieFase > 1 and self.richting == 'links':
-                self.animatieFase = 0
-                self.animeerSpeler = False
-            if self.animatieFase > 3 and self.richting == 'rechts':
-                self.animatieFase = 2
-                self.animeerSpeler = False
-            if self.animatieFase > 1 and self.richting == 'onder': # Moeten nog textures voor worden gemaakt
-                self.animatieFase = 0
-                self.animeerSpeler = False
-            if self.animatieFase > 1 and self.richting == 'boven': # Moeten nog textures voor worden gemaakt
-                self.animatieFase = 0
-                self.animeerSpeler = False
+            self.animatieFase += self.animatieTijd
 
-            self.img = pygame.transform.scale(self.charImg[round(self.animatieFase)], (playerSize*17, playerSize*40))
+            self.maximumFase = 2 #if self.richting in ['links', 'rechts'] else 3
 
+            if self.animatieFase >= self.maximumFase:
+                self.animatieFase = 0
+
+            self.index = int(self.animatieFase)
+        
+        else:
+
+            self.index = 0
+
+        self.img = pygame.transform.scale(self.charImg[self.richting][self.index], (playerSize*17, playerSize*40))
+        self.animeerSpeler = False
