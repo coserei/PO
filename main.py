@@ -31,16 +31,10 @@ class game:
 
         pygame.display.set_caption('Farming sim')
 
-        # Preloading images
-
         self.slotSelect = pygame.transform.scale(pygame.image.load("img/slot.png"),(16*guiScale,16*guiScale))
-
         self.clock = pygame.time.Clock()
-
         self.font = pygame.font.Font('font.ttf', 20)
-
         self.displayControls = False
-
         self.zwart = pygame.transform.scale(pygame.image.load('img/zwart.png').convert_alpha(), (infox, infoy))
 
     def newGame(self): # deze functie wordt aangeropen vanuit de main menu voor het maken van een nieuwe game
@@ -54,23 +48,23 @@ class game:
             if player.inHuis == True:
                 self.gameWindow.fill((0,0,0))
                 self.gameWindow.blit(muur1Img, (infox // 2 -160*houseScale+player.pos[0],infoy // 2 -160 *houseScale+player.pos[1]))
-
-
-            if not player.inHuis:
-                self.gameWindow.blit(huisExt, (player.velocity_x+player.pos[0]+300, player.velocity_y+player.pos[1]+200))
-                self.gameWindow.blit(skybox, (0,0))
-                self.gameWindow.blit(player.achtergrond, player.pos)
-            self.gameWindow.blit(player.img, ((infox // 2)-7*playerSize, round((infoy // 2)-playerSize*20.5)))
             
+            if player.inHuis == False:
+                self.gameWindow.blit(skybox, (0,0))
+                self.gameWindow.blit(achtergrondImg, player.pos)
+                self.gameWindow.blit(huisExt, (player.velocity_x+player.pos[0] + 400, player.velocity_y+player.pos[1] + 400))
+                self.gameWindow.blit(marktKraam, (player.velocity_x+player.pos[0] + 1000, player.velocity_y+player.pos[1] + 400))
+
+            self.gameWindow.blit(player.img, ((infox // 2)-7*playerSize, round((infoy // 2)-playerSize*20.5)))
+    
             if not player.inHuis:
                 for bomen in range(len(player.boomX)):
-                    print(player.boomX)
                     self.gameWindow.blit(boomImg, (player.pos[0]+player.boomX[bomen],player.pos[1]+player.boomY[bomen]))
                 if len(zaadX) == 1:
                     exit;
                 else:
                     for crops in range(1, len(crop.zaadX)):
-                        self.cropImg = pygame.transform.scale(pygame.image.load("img/items/" + crop.zaadSoort[crops] + "Zaad.png"),(16*guiScale,16*guiScale))
+                        self.cropImg = pygame.transform.scale(pygame.image.load("img/items/" + crop.zaadSoort[crops] + '.png'),(16*guiScale,16*guiScale))
                         self.gameWindow.blit(self.cropImg, (-crop.zaadX[crops]+player.velocity_x+player.pos[0]+(infox // 2)-7*playerSize, -crop.zaadY[crops]+player.velocity_y+player.pos[1]+round((infoy // 2)-playerSize*20.5)))
 
         self.gameWindow.blit(inventarisGUI, (round((infox // 2)-(guiScale*115)/2, 0), (infoy - 100)))
@@ -171,6 +165,10 @@ class shop:
 
         self.buyOptionsRect = []
 
+        self.kaarsImg = 'kaars1.png'
+        self.muurImg = 'muur1.png'
+        self.bedImg = 'bed1.png'
+
     def shopOption(self):
 
         self.imageX = 200
@@ -237,6 +235,11 @@ class shop:
                         self.kaarsImg = 'kaars2.png'
                     if self.buyOptions[self.buySelect] == 'kaars3':
                         self.kaarsImg = 'kaars3.png'
+
+                    self.bedImg = int(data[22])
+                    self.kaarsImg = int(data[23])
+                    self.muurImg = int(data[24])
+                    
                     self.munten -= 1
 
     def sell(self):
@@ -322,6 +325,10 @@ class button():
                 if start_button.draw():
                     game.spelgestart = True
                 if exit_button.draw():
+                    if player.inHuis:
+                        self.huisSave = 1
+                    else:
+                        self.huisSave = 0
                     savedata = [str(player.pos[0]) + "\n",
                     str(player.pos[1]) + "\n",
                     str(game.tijd) + "\n",
@@ -344,7 +351,11 @@ class button():
                     str(player.borders[3]) + "\n",
                     str(player.hitboxessave),
                     str(shop.munten) + "\n",
-                    player.achtergrondsave]
+                    shop.bedImg + "\n",
+                    shop.kaarsImg + "\n",
+                    shop.muurImg + "\n",
+                    str(self.huisSave)
+                    ]
                     self.save.writelines(savedata)
                     self.save.close()
                     pygame.quit()
@@ -370,11 +381,17 @@ player = player(game)
 crop = crop()
 shop = shop()
 
+achtergrondImg = pygame.image.load("img/achtergrond.png").convert_alpha()
+achtergrondImg = pygame.transform.scale(achtergrondImg, (guiScale*992, guiScale*992))
+
 boomImg = pygame.image.load('img/boomImg.png').convert_alpha()
 boomImg = pygame.transform.scale(boomImg, (int(456 * 0.5), int(546 * 0.5)))
 
 skybox = pygame.image.load('img/skybox.jpg').convert_alpha()
 skybox = pygame.transform.scale(skybox, (infox, infoy))
+
+marktKraam = pygame.image.load('img/marktKraam.png').convert_alpha()
+marktKraam = pygame.transform.scale(marktKraam, (568*0.3, 623*0.3))
 
 movementKeys = pygame.image.load('img/movement_keys.png').convert_alpha()
 huisBinnenGaan_key = pygame.image.load('img/huisBinnenGaan_key.png').convert_alpha()

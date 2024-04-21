@@ -5,8 +5,6 @@ import random
 
 class player(pygame.sprite.Sprite):
 
-    inHuis = False
-
     # Hitboxes
 
     collideCount = 0
@@ -27,7 +25,6 @@ class player(pygame.sprite.Sprite):
     borderhuis = [500, 500, 1000, 1000]
     borderbuiten = [500, 500, 1000, 1000]
 
-    achtergrondsave = data[22]
     hitboxessave = data[20]
 
     # Lijst met hitboxes
@@ -44,8 +41,6 @@ class player(pygame.sprite.Sprite):
         hitboxes = hitboxeshuis
 
     borders = [int(data[16]), int(data[17]), int(data[18]), int(data[19])]
-
-    achtergrond = pygame.transform.scale(pygame.image.load("img/achtergrond.png"), (guiScale*992, guiScale*992))
 
     def __init__(self, game):
         super().__init__()
@@ -97,6 +92,7 @@ class player(pygame.sprite.Sprite):
 
         self.animatieTijd = 1/15
 
+        self.inHuis = bool(int(data[25]))
 
     def userInput(self):
       self.velocity_x = 0
@@ -173,7 +169,6 @@ class player(pygame.sprite.Sprite):
             self.shopSchermOpen = True
         if pygame.Rect.colliderect(self.rect, self.interactableObjects[4]) and keys[pygame.K_u]:
             self.shop2SchermOpen = True
-            print(self.shop2SchermOpen)
             
 
     def spelerAnimatie(self, richting):

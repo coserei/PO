@@ -61,16 +61,26 @@ class crop:
         self.zaadSoort = [0]
     
     def cropPlanten(self, playerPos, cropGeplant):
-        for crops in range(len(self.zaadX)):
-            if cropGeplant == True and (self.zaadX[crops]-self.zaadX[crops-1] > 16*mapScale or len(item) == 1):
-                cropGeplant = False
-                for zaad in range(len(item)):
-                    if inventaris.inventarisVakken[inventaris.slot] == item[zaad] + "Zaad":
+        #print(inventaris.inventarisVakken)
+
+        if cropGeplant == True:
+            if not inventaris.inventarisVakken[inventaris.slot] == 'leeg':
+                collision = False
+                print('a')
+                for hitX, hitY in zip(self.zaadX, self.zaadY):
+                    print("hitX:", hitX, "hitY:", hitY, "playerPos[0]:", playerPos[0], "playerPos[1]:", playerPos[1])
+                    if (abs(hitX - playerPos[0]) < 300 and abs(hitY - playerPos[1]) < 300):
+                        collision = True
+                        break
+                    if not collision:
+                        print('a')
                         self.zaadX.append(playerPos[0])
                         self.zaadY.append(playerPos[1])
-                        self.zaadSoort.append(item[zaad])
+                        self.zaadSoort.append(inventaris.inventarisVakken[inventaris.slot])
                         inventaris.itemHoeveelheden[inventaris.slot] -= 1
-                        return cropGeplant
+            
+            cropGeplant = False
+            return cropGeplant
 
     def update(self, playerPos, cropGeplant):
         self.cropPlanten(playerPos, cropGeplant)
